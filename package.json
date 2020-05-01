@@ -8,6 +8,8 @@
     "test": "jest"
   },
   "dependencies": {
+    "async-storage": "^0.1.0",
+    "axios": "^0.19.2",
     "expo": "~37.0.3",
     "expo-updates": "~0.1.0",
     "react": "~16.9.0",

@@ -1,13 +1,28 @@
-import React, { useState } from 'react';
-import { StyleSheet, KeyboardAvoidingView, Platform, Text, View, Image, TextInput, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, AsyncStorage, KeyboardAvoidingView, Platform, Text, Image, TextInput, TouchableOpacity } from 'react-native';
 import logo from '../assets/logo.png';
+import api from '../services/api'
 // import { Container } from './styles';
 
-export default function Login({navigation}) {
+export default function Login({ navigation }) {
     const [user, setUser] = useState('');
-    function handleLogin () {
-        console.log('asd');
-        navigation.navigate('Main');
+
+    useEffect(() => { 
+        AsyncStorage.getItem('user').then(user => {
+            if (user) {
+                navigation.navigate('Main', { user });
+            }
+        })
+    }, [])
+
+    async function handleLogin() {
+        const response = await api.post('/devs', { username: user })
+        const { _id } = response.data;
+        console.log(_id);
+
+
+        await AsyncStorage.setItem('user', _id);
+        navigation.navigate('Main', { _id });
     }
 
     return (
@@ -15,15 +30,17 @@ export default function Login({navigation}) {
             behavior="padding"
             enabled={Platform.OS == 'ios'}
             style={styles.container}>
-            <Image source={logo}></Image>
+
+            <Image source={logo} />
 
             <TextInput
                 autoCapitalize="none"
-                autoCorrect="false"
+                autoCorrect={false}
                 placeholder="Digite seu usuário no git"
-                placeholderTextColor="#999" style={styles.input}
+                placeholderTextColor="#999"
+                style={styles.input}
                 value={user}
-                onChangeText={setUser}></TextInput>
+                onChangeText={setUser} />
 
             <TouchableOpacity onPress={handleLogin} style={styles.button}>
                 <Text style={styles.buttonText}>Enviar</Text>
